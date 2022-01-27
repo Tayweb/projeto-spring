@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="utf-8">
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+	crossorigin="anonymous"></script>
+
+<title>Cadastro</title>
+
+<style type="text/css">
+
+#paginacao a:hover{
+background: #2BBBAD;
+color: #fff;
+}
+
+
+</style>
+
+</head>
+<body>
+	<div class="row">
+
+		<div th:each="m : ${msg}">
+			<span th:text="${m}"></span>
+		</div>
+
+		<form class="col s12" action="salvarpessoa" method="post"
+			th:object="${pessoaobj}" enctype="multipart/form-data" >
+
+			<div class="row">
+
+				<div class="input-field col s6">
+					<label>ID</label> <input type="text" readonly="readonly" name="id"
+						th:field="*{id}">
+				</div>
+				<div class="input-field col s6">
+					<label>Nome</label> <input type="text" name="nome"
+						th:field="*{nome}" class="active">
+				</div>
+				<div class="input-field col s6">
+					<label class="active">Sexo</label> <select class="browser-default"
+						th:field="*{sexo}">
+						<option value="" disabled selected>Selecione</option>
+						<option value="M" th:text="Masculino" />
+						<option value="F" th:text="Feminino" />
+					</select>
+				</div>
+				<div class="input-field col s6"
+					sec:authorize="hasRole('ROLE_ADMIN')">
+					<label>Email</label> <input type="email" name="email"
+						th:field="*{email}" class="active">
+				</div>
+				
+				<div class="input-field col s6">
+				<label for="dataNascimento">Data Nascimento</label> 
+				<input type="date" class="datepicker" id="dataNascimento" th:field="*{dataNascimento}" name="dataNascimento">
+				</div>
+				
+				<div class="file-path-wrapper">
+				<label for="file" >Currículo</label> 
+				<input type="file" id="file" name="file" class="file-path validate">
+				</div>
+
+
+
+				<div class="input-field col s6">
+					<label>CEP</label> <input type="text" name="cep" th:field="*{cep}"
+						class="active" id="cep">
+				</div>
+				<div class="input-field col s6">
+					<label>Rua</label> <input type="text" name="rua" th:field="*{rua}"
+						class="active" id="rua">
+				</div>
+				<div class="input-field col s6">
+					<label>Bairro</label> <input type="text" name="bairro"
+						th:field="*{bairro}" class="active" id="bairro">
+				</div>
+				<div class="input-field col s6">
+					<label>Cidade</label> <input type="text" name="cidade"
+						th:field="*{cidade}" class="active" id="cidade">
+				</div>
+				<div class="input-field col s6">
+					<label>UF</label> <input type="text" name="uf" th:field="*{uf}"
+						class="active" id="uf">
+				</div>
+				
+				<div class="input-field col s6">
+					<label class="active">Profissão</label> <select class="browser-default"
+						th:field="*{profissao}" id="profissao">
+						<option value="" disabled selected>Selecione</option>
+						<option th:each="p : ${profissoes}" th:value="${p.id}" th:text ="${p.nome}"/>
+					</select>
+				</div>
+				
+				<div class="input-field col s6">
+					<label class="active">Cargo</label> <select class="browser-default"
+						th:field="*{cargo}" id="cargo">
+						<option value="" disabled selected>Selecione</option>
+						<option th:each="c : ${T(com.projetospring.model.Cargo).values()}" th:value="${c.valor}" th:text ="${c.nome}"/>
+					</select>
+				</div>
+				
+			</div>
+
+			<div class="row">
+				<input type="submit" class="waves-effect waves-light btn"
+					value="Salvar">
+			</div>
+			<div class="row">
+				<button type="reset" class="waves-effect waves-light btn">Novo</button>
+			</div>
+		</form>
+
+		<a href="/listapessoas"> Lista Pessoas</a>
+
+		<div class="row">
+
+			<form action="pesquisarnome" method="post" class="col s12" id="pesquisarnome">
+				<div class="input-field col s6">
+					<label>Pesquisar</label> <input name="nomepesquisa"> <input
+						type="submit" value="Buscar" class="waves-effect waves-light btn">
+				</div>
+				  <div class="input-field col s6">
+					<label class="active">Sexo</label> <select class="browser-default" name="sexopesquisa">
+				
+						<option value="" selected>Todos</option>
+						<option value="M" th:text="Masculino" />
+						<option value="F" th:text="Feminino" />
+					</select>
+				</div>
+
+				<input name="pdf" type="submit" value="Imprimir PDF"
+					onclick="document.getElementById('pesquisarnome').method = 'get'"
+					class="waves-effect waves-light btn"></input>
+			</form>
+		</div>
+	</div>
+
+	<table class="striped">
+		<thead>
+			<tr>
+				<td>ID</td>
+				<td>Nome</td>
+				<td>Email</td>
+				<td>Currículo</td>
+
+			</tr>
+		</thead>
+		<tr th:each="pessoas : ${pessoa.content}">
+			<td th:text="${pessoas.id}"></td>
+			<td><a
+				th:href="@{/telefones/{idpessoa}(idpessoa=${pessoas.id})}"><span
+					th:text="${pessoas.nome}"></span></a></td>
+			<td th:text="${pessoas.email}"></td>
+			
+			<td><a th:if="${pessoas.curriculo !=null}" th:href="@{/baixarcurriculo/{idpessoa}(idpessoa=${pessoas.id})}">Download</a>
+				<a th:if="${pessoas.curriculo ==null}" style="color: red;">Não Existe</a></td>
+			<td><a
+				th:href="@{/editarpessoa/{idpessoa}(idpessoa=${pessoas.id})}">Editar</a></td>
+			<td><a
+				th:href="@{/excluirpessoa/{idpessoa}(idpessoa=${pessoas.id})}">Excluir</a></td>
+
+		</tr>
+	</table>
+	
+	<div class="row" id="paginacao" style="margin-top: 1% !important; margin-left: 50%">
+	
+	<span th:if="${pessoa.hasPrevious()}">
+	<a th:href="@{/pessoapag(page=${pessoa.number-1}, size=${pessoa.size})}">Anterior</a>
+	</span>
+	
+	<th:block th:each="i: ${#numbers.sequence(0, pessoa.totalPages - 1)}">
+		<a th:href="@{/pessoapag(page=${i}, size=${pessoa.size})}" style="padding-left: 10px">[[${i} + 1]]</a>
+	</th:block>
+	
+	<span th:if="${pessoa.hasNext()}">
+	<a th:href="@{/pessoapag(page=${pessoa.number+1}, size=${pessoa.size})}">Próximo</a>
+	</span>
+	
+	</div>
+
+	<script type="text/javascript">
+		$(document)
+				.ready(
+						function() {
+
+							function limpa_formulário_cep() {
+								// Limpa valores do formulário de cep.
+								$("#rua").val("");
+								$("#bairro").val("");
+								$("#cidade").val("");
+								$("#uf").val("");
+								$("#ibge").val("");
+							}
+
+							//Quando o campo cep perde o foco.
+							$("#cep")
+									.blur(
+											function() {
+
+												//Nova variável "cep" somente com dígitos.
+												var cep = $(this).val()
+														.replace(/\D/g, '');
+
+												//Verifica se campo cep possui valor informado.
+												if (cep != "") {
+
+													//Expressão regular para validar o CEP.
+													var validacep = /^[0-9]{8}$/;
+
+													//Valida o formato do CEP.
+													if (validacep.test(cep)) {
+
+														//Preenche os campos com "..." enquanto consulta webservice.
+														$("#rua").val("...");
+														$("#bairro").val("...");
+														$("#cidade").val("...");
+														$("#uf").val("...");
+														$("#ibge").val("...");
+
+														//Consulta o webservice viacep.com.br/
+														$
+																.getJSON(
+																		"https://viacep.com.br/ws/"
+																				+ cep
+																				+ "/json/?callback=?",
+																		function(
+																				dados) {
+
+																			if (!("erro" in dados)) {
+																				//Atualiza os campos com os valores da consulta.
+																				$(
+																						"#rua")
+																						.val(
+																								dados.logradouro);
+																				$(
+																						"#bairro")
+																						.val(
+																								dados.bairro);
+																				$(
+																						"#cidade")
+																						.val(
+																								dados.localidade);
+																				$(
+																						"#uf")
+																						.val(
+																								dados.uf);
+																				$(
+																						"#ibge")
+																						.val(
+																								dados.ibge);
+																			} //end if.
+																			else {
+																				//CEP pesquisado não foi encontrado.
+																				limpa_formulário_cep();
+																				alert("CEP não encontrado.");
+																			}
+																		});
+													} //end if.
+													else {
+														//cep é inválido.
+														limpa_formulário_cep();
+														alert("Formato de CEP inválido.");
+													}
+												} //end if.
+												else {
+													//cep sem valor, limpa formulário.
+													limpa_formulário_cep();
+												}
+											});
+						});
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
+ <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+<title>Cadastro</title>
+</head>
+<body>
+<a href="cadastropessoa" class="waves-effect waves-light btn">Cadastro</a>
+<h6>Cadastro de Telefones</h6>
+
+
+<div th:each="p : ${pessoaobj}">
+		<div class="row"></div>
+		<p>ID: <span th:text="${p.id}"></span></p>
+		<p>Nome: <span th:text="${p.nome}"></span></p>
+		<p>Email: <span th:text="${p.email}"></span></p>
+		
+</div>
+
+<h6>Telefones</h6>
+
+<div th:each = "m : ${msg}">
+	<span th:text = "${m}"></span>
+</div>
+
+		<form th:action="@{/salvartelefone/{pessoaid}(pessoaid=${pessoaobj.id})}" method="post" class="col s12" onsubmit="return validarCampos() ? true : false">
+		<div class="row">
+			<div class="input-field col s6">
+				<label class="active">Número</label> <input name="numero" id="numero" 
+					class="validate" >
+			</div>
+
+			<div class="input-field col s6">
+				<label  class="active"> Tipo</label> <input name="tipo" id="tipo"  class="validate" >
+			</div>
+
+			<div class="row">
+				<input type="submit" class="waves-effect waves-light btn"
+					value="Salvar">
+			</div>
+
+		</div>
+	</form>
+
+
+<table class="striped">
+<thead>
+<tr>
+<td>Telefone</td>
+<td>Tipo</td>
+
+</tr>
+</thead>
+<tr th:each = "tel : ${telefone}">
+<td th:text = "${tel.numero}"></td>
+<td th:text = "${tel.tipo}"></td>
+<td> <a th:href="@{/excluirtelefone/{idtelefone}(idtelefone=${tel.id})}">Excluir</a></td>
+</tr>
+</table>
+
+
+	
+	<script type="text/javascript">
+	
+	
+		function validarCampos() {
+			numero = document.getElementById('numero').value;
+			tipo = document.getElementById('tipo').value;
+
+			if (numero === '') {
+				alert('Numero deve ser informado')
+				return false;
+				
+			} else if (tipo === '') {
+				alert('Tipo deve ser informado')
+				return false;
+			}
+
+		}
+	</script>
+	
+	
+</body>
+</html>
